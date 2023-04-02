@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from posts.models import Group, Post, User
+from posts.models import Group, Post
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
@@ -29,7 +29,7 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (AuthorOrReadOnly,)
 
 
-class FollowViewSet(viewsets.ReadOnlyModelViewSet):
+class FollowViewSet(viewsets.ModelViewSet):
     """Вьюсет подписок"""
     serializer_class = FollowSerializer
     permission_classes = (IsAuthenticated,)
@@ -37,7 +37,7 @@ class FollowViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('user__username', 'following__username',)
 
     def get_queryset(self):
-        user = get_object_or_404(User, username=self.request.user)
+        user = self.request.user
         return user.follower.all()
 
     def perform_create(self, serializer):
